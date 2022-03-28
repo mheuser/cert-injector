@@ -1,0 +1,43 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "cert-injector.mheuser.github.com"
+webhooks:
+  - name: "cert-injector.mheuser.github.com"
+    namespaceSelector:
+      matchLabels:
+        com.github.mheuser/cert-injector-enabled: "true"
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+        scope: "*"
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    timeoutSeconds: 2
+    clientConfig:
+      service:
+        namespace: default
+        name: simple-kubernetes-webhook
+        path: /validate-pods
+        port: 443
+      caBundle: |
+        LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMxakNDQWI0Q0NRQ0JDZElOZG9TSW9UQU5CZ2tx
+        aGtpRzl3MEJBUXNGQURBdE1Rc3dDUVlEVlFRR0V3SkUKUlRFZU1Cd0dBMVVFQXd3VlkyVnlkQzFwYm1w
+        bFkzUnZjaTEzWldKb2IyOXJNQjRYRFRJeU1ETXlPREl6TkRReQpPVm9YRFRJek1ETXlPREl6TkRReU9W
+        b3dMVEVMTUFrR0ExVUVCaE1DUkVVeEhqQWNCZ05WQkFNTUZXTmxjblF0CmFXNXFaV04wYjNJdGQyVmlh
+        Rzl2YXpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUIKQU1ScVdLZGRGL3BY
+        SWF5d3pMaHFwUk1XZ0ZmUisrUnNLYiswY3dFcFQzWVBLQVhLQ2dFMzNManVzQjAzaEdiTgpSZG1PVzFt
+        TTM0dDZOR0N2blE0SVAwcXZycXEraDNueFIzQnF4VEt5NkRGOFR2UUtTSDZoaXRWVW1NeVdqL2NXCkkx
+        NytDZktreUIxVGkrckRrZEJqaHprRThoSFEyYXRiWDcyeGNYaEIrUDdRQXE0WklPYUY4WDJOcmZ6Sk1v
+        d2kKL0dHVTJrQnVjVG80eHFKT3o4bzhRQUVtNUJmOU14Q1M3QUFwRVprMDZLMnF5T0ZHV0JvOHBSOS96
+        cStxclE3bQprUHY2YjBib0F5VGo3VDA3SlVVVXVMRzkrM3BTZTJaYjFwZ0lZb25tcmFmeFo4Zld3UXlh
+        bUdrWWR0akV6S0RLCmJZUnFSYzhCZ3hqc0FLNTJKcWpOQ3djQ0F3RUFBVEFOQmdrcWhraUc5dzBCQVFz
+        RkFBT0NBUUVBRHBxSTVaWDUKN2RmMm1MdEZZWUNaVGdoQnZweG1Gay8rRWVPTFkvVDZVWTFIaXAvZDNZ
+        REZxSC8wUjdTb1pBWk81eVpsTzlnRAp0SUZvOVN1bEl3RG5qY1ZBVVFMc1Mzb0QzTFJmR1p0MmpUVU5P
+        MmFmTlhpYlJxWnhCRUxXdXdnczhLVTZzMDNyClN0dWtxSi8wVmZPVXYwUDRYblhTRVQxbnNuUjJpVFNl
+        cVFYMXV2N1Fpc1I5TVp3VEthYzNEWVlTN0pQVDB2VXcKMmpsOGIwME5Td1ZESGFTTmFmRlI4S1M4UTV2
+        TnU3REZLVDlZeC9VU2c4ZytoSlFZc3ZrNHVnaVlzY0xJOGcwcwpaa2xLd3BtZFhEcGoyYmlkZkpOWXN6
+        bDhPYkhxbjNnTWs0b2ZBdDArVmhkZkYrV1h5OU5mOU9aK1dOL21GZ3Z5CmhUQ3pVTVlaQUpOK0RBPT0K
+        LS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=

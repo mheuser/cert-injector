@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: apps
+  name: ca-certificates
+immutable: true
+data:
+  ca-certificates.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIDGTCCAgGgAwIBAgIJALKpr5KtExnlMA0GCSqGSIb3DQEBBQUAMDExCzAJBgNV
+    BAYTAkFVMSIwIAYDVQQDDBlzaW1wbGUta3ViZXJuZXRlcy13ZWJob29rMB4XDTIx
+    MTAxNDA4MDY0MFoXDTIyMTAxNDA4MDY0MFowMTELMAkGA1UEBhMCQVUxIjAgBgNV
+    BAMMGXNpbXBsZS1rdWJlcm5ldGVzLXdlYmhvb2swggEiMA0GCSqGSIb3DQEBAQUA
+    A4IBDwAwggEKAoIBAQDHooJBTlne4XpMlAbV80CyRO1RwnS5zAJcpYts16G66JRJ
+    SNbPAkwc64uCabRG6Ea3pokwYUDDMLsBx4AQT0qkuIItRX0PBN03Jc1xZ4fkfzHH
+    C2pmmPZgwrFXhNaIMZPAm0j2w4vaOpVNnWJGsQ2CbQGv4jVe/Cdpdit1cpQUdSjk
+    fQp1Bu2oylTwWX55tc5xQ+Bv46U0Ni+g6zVGQJfBoITeSkqjST7HKi3Qz40PR2GE
+    Wg6Bi/TYNFrZqPTxBfd2tL9f6oWZCT81QbKqCypzDLIZEhBKQHcQLZo2RF6iRXOX
+    fAckC9cjrWlgfwXsrAPGVLSqYrhjm+NtoK/4TSaBAgMBAAGjNDAyMDAGA1UdEQQp
+    MCeCJXNpbXBsZS1rdWJlcm5ldGVzLXdlYmhvb2suZGVmYXVsdC5zdmMwDQYJKoZI
+    hvcNAQEFBQADggEBADoHLVpkmGgx4FTzKuYr80lcmEvmQAhnFqjVV0Drah0lHwcj
+    Y5YVOiaX8cACiSb1ZlXxuTvC7PhOzHX82Zav8DKv9K8d65n+sYoPxhSiDGB96wMH
+    jPu97/rNUIjctgnd9AfO+fo+A2JFimIezXYvphnsdtqzq34pNHKbpzerCgqfFFiw
+    ZFx0wk/6GU2SdOlqmrq8CtVG0EUCdoOwlR/TCR82Rt1mE/JIaqbzx77vH7ny6/NY
+    sMUh0lDtMPSAZ62CKFqSfpxQ6e1se6gUpVYSlLX4YczqS/uadvTD/GYsAhPlgva6
+    ELXil0rN0D77y2wmS3orQ+hqPoA3EckCyNmrHZ4=
+    -----END CERTIFICATE-----

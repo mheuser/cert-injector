@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cert-injector-webhook
+  name: cert-injector-webhook
+  namespace: cert-injector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-injector-webhook
+  template:
+    metadata:
+      labels:
+        app: cert-injector-webhook
+    spec:
+      tolerations:
+        - key: acme.com/lifespan-remaining
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - image: cert-injector-webhook:latest
+          imagePullPolicy: Never
+          name: cert-injector-webhook
+          env:
+            - name: TLS
+              value: "true"
+            - name: LOG_LEVEL
+              value: "trace"
+            - name: LOG_JSON
+              value: "true"
+          volumeMounts:
+            - name: tls
+              mountPath: "/etc/admission-webhook/tls"
+              readOnly: true
+      volumes:
+        - name: tls
+          secret:
+            secretName: cert-injector-webhook-tls
