@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/mheuser/cert-injector-webhook/pkg/mutation"
-	"github.com/mheuser/cert-injector-webhook/pkg/validation"
+	"github.com/mheuser/cert-injector/pkg/mutation"
+	"github.com/mheuser/cert-injector/pkg/validation"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 	corev1 "k8s.io/api/core/v1"

@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/mheuser/cert-injector-webhook/pkg/admission"
+	"github.com/mheuser/cert-injector/pkg/admission"
 	"github.com/sirupsen/logrus"
 	admissionv1 "k8s.io/api/admission/v1"
 )
