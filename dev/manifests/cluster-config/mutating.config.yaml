@@ -6,7 +6,7 @@ webhooks:
   - name: "cert-injector.mheuser.github.com"
     namespaceSelector:
       matchLabels:
-        com.github.mheuser/cert-injector-enabled: "true"
+        cert-injector.mheuser.github.com/enabled: "true"
     rules:
       - apiGroups: [""]
         apiVersions: ["v1"]

@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: apps
   labels:
-    com.github.mheuser/cert-injector-enabled: "true"
+    cert-injector.mheuser.github.com/enabled: "true"

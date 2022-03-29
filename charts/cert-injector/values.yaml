@@ -1,0 +1,382 @@
+## @section Global parameters
+## Global Docker image parameters
+## Please, note that this will override the image parameters, including dependencies, configured to use the global value
+## Current available global Docker image parameters: imageRegistry, imagePullSecrets and storageClass
+
+## @param global.imageRegistry Global Docker image registry
+## @param global.imagePullSecrets Global Docker registry secret names as an array
+## @param global.storageClass Global StorageClass for Persistent Volume(s)
+##
+global:
+  imageRegistry: ""
+  ## E.g.
+  ## imagePullSecrets:
+  ##   - myRegistryKeySecretName
+  ##
+  imagePullSecrets: []
+  storageClass: ""
+
+## @section Common parameters
+
+## @param kubeVersion Override Kubernetes version
+##
+kubeVersion: ""
+## @param nameOverride String to partially override common.names.name
+##
+nameOverride: ""
+## @param fullnameOverride String to fully override common.names.fullname
+##
+fullnameOverride: ""
+## @param namespaceOverride String to fully override common.names.namespace
+##
+namespaceOverride: ""
+## @param commonLabels Labels to add to all deployed objects
+##
+commonLabels: {}
+## @param commonAnnotations Annotations to add to all deployed objects
+##
+commonAnnotations: {}
+## @param clusterDomain Kubernetes cluster domain name
+##
+clusterDomain: cluster.local
+## @param extraDeploy Array of extra objects to deploy with the release
+##
+extraDeploy: []
+
+## Enable diagnostic mode in the deployment
+##
+diagnosticMode:
+  ## @param diagnosticMode.enabled Enable diagnostic mode (all probes will be disabled and the command will be overridden)
+  ##
+  enabled: false
+  ## @param diagnosticMode.command Command to override all containers in the deployment
+  ##
+  command:
+    - sleep
+  ## @param diagnosticMode.args Args to override all containers in the deployment
+  ##
+  args:
+    - infinity
+
+## @section cert-injector Parameters
+
+## %%MAIN_CONTAINER/POD_DESCRIPTION%%
+##
+certInjector:
+  ## Bitnami cert-injector image
+  ## ref: https://hub.docker.com/r/bitnami/cert-injector/tags/
+  ## @param certInjector.image.registry cert-injector image registry
+  ## @param certInjector.image.repository cert-injector image repository
+  ## @param certInjector.image.tag cert-injector image tag (immutable tags are recommended)
+  ## @param certInjector.image.pullPolicy cert-injector image pull policy
+  ## @param certInjector.image.pullSecrets cert-injector image pull secrets
+  ## @param certInjector.image.debug Enable cert-injector image debug mode
+  ##
+  image:
+    registry: ghcr.io
+    repository: mheuser/cert-injector
+    tag: main
+    ## Specify a imagePullPolicy
+    ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+    ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+    ##
+    pullPolicy: IfNotPresent
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ## e.g:
+    ## pullSecrets:
+    ##   - myRegistryKeySecretName
+    ##
+    pullSecrets: []
+    ## Enable debug mode
+    ##
+    debug: false
+  ## @param certInjector.replicaCount Number of cert-injector replicas to deploy
+  ##
+  replicaCount: 1
+  ## @param certInjector.containerPorts.http cert-injector HTTP container port
+  ## @param certInjector.containerPorts.https cert-injector HTTPS container port
+  ##
+  containerPorts:
+    http: 8080
+    https: 8443
+  ## Configure extra options for cert-injector containers' liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
+  ## @param certInjector.livenessProbe.enabled Enable livenessProbe on cert-injector containers
+  ## @param certInjector.livenessProbe.initialDelaySeconds Initial delay seconds for livenessProbe
+  ## @param certInjector.livenessProbe.periodSeconds Period seconds for livenessProbe
+  ## @param certInjector.livenessProbe.timeoutSeconds Timeout seconds for livenessProbe
+  ## @param certInjector.livenessProbe.failureThreshold Failure threshold for livenessProbe
+  ## @param certInjector.livenessProbe.successThreshold Success threshold for livenessProbe
+  ##
+  livenessProbe:
+    enabled: false #TODO
+    initialDelaySeconds: 2
+    periodSeconds: 2
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param certInjector.readinessProbe.enabled Enable readinessProbe on cert-injector containers
+  ## @param certInjector.readinessProbe.initialDelaySeconds Initial delay seconds for readinessProbe
+  ## @param certInjector.readinessProbe.periodSeconds Period seconds for readinessProbe
+  ## @param certInjector.readinessProbe.timeoutSeconds Timeout seconds for readinessProbe
+  ## @param certInjector.readinessProbe.failureThreshold Failure threshold for readinessProbe
+  ## @param certInjector.readinessProbe.successThreshold Success threshold for readinessProbe
+  ##
+  readinessProbe:
+    enabled: false #TODO
+    initialDelaySeconds: 2
+    periodSeconds: 2
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param certInjector.startupProbe.enabled Enable startupProbe on cert-injector containers
+  ## @param certInjector.startupProbe.initialDelaySeconds Initial delay seconds for startupProbe
+  ## @param certInjector.startupProbe.periodSeconds Period seconds for startupProbe
+  ## @param certInjector.startupProbe.timeoutSeconds Timeout seconds for startupProbe
+  ## @param certInjector.startupProbe.failureThreshold Failure threshold for startupProbe
+  ## @param certInjector.startupProbe.successThreshold Success threshold for startupProbe
+  ##
+  startupProbe:
+    enabled: false #TODO
+    initialDelaySeconds: 2
+    periodSeconds: 2
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
+  ## @param certInjector.customLivenessProbe Custom livenessProbe that overrides the default one
+  ##
+  customLivenessProbe: {}
+  ## @param certInjector.customReadinessProbe Custom readinessProbe that overrides the default one
+  ##
+  customReadinessProbe: {}
+  ## @param certInjector.customStartupProbe Custom startupProbe that overrides the default one
+  ##
+  customStartupProbe: {}
+  ## cert-injector resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  ## @param certInjector.resources.limits The resources limits for the cert-injector containers
+  ## @param certInjector.resources.requests The requested resources for the cert-injector containers
+  ##
+  resources:
+    limits: {}
+    requests: {}
+  ## Configure Pods Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param certInjector.podSecurityContext.enabled Enabled cert-injector pods' Security Context
+  ## @param certInjector.podSecurityContext.fsGroup Set cert-injector pod's Security Context fsGroup
+  ##
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+  ## Configure Container Security Context
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param certInjector.containerSecurityContext.enabled Enabled cert-injector containers' Security Context
+  ## @param certInjector.containerSecurityContext.runAsUser Set cert-injector containers' Security Context runAsUser
+  ## @param certInjector.containerSecurityContext.runAsNonRoot Set cert-injector containers' Security Context runAsNonRoot
+  ##
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  #%%OTHER_PARAMETERS_RELATED_TO_THIS_CONTAINER/POD%%
+
+  ## @param certInjector.existingConfigmap The name of an existing ConfigMap with your custom configuration for cert-injector
+  ##
+  existingConfigmap:
+  ## @param certInjector.command Override default container command (useful when using custom images)
+  ##
+  command: []
+  ## @param certInjector.args Override default container args (useful when using custom images)
+  ##
+  args: []
+  ## @param certInjector.hostAliases cert-injector pods host aliases
+  ## https://kubernetes.io/docs/concepts/services-networking/add-entries-to-pod-etc-hosts-with-host-aliases/
+  ##
+  hostAliases: []
+  ## @param certInjector.podLabels Extra labels for cert-injector pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  ##
+  podLabels: {}
+  ## @param certInjector.podAnnotations Annotations for cert-injector pods
+  ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+  ##
+  podAnnotations: {}
+  ## @param certInjector.podAffinityPreset Pod affinity preset. Ignored if `certInjector.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAffinityPreset: ""
+  ## @param certInjector.podAntiAffinityPreset Pod anti-affinity preset. Ignored if `certInjector.affinity` is set. Allowed values: `soft` or `hard`
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#inter-pod-affinity-and-anti-affinity
+  ##
+  podAntiAffinityPreset: soft
+  ## Node certInjector.affinity preset
+  ## ref: https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#node-affinity
+  ##
+  nodeAffinityPreset:
+    ## @param certInjector.nodeAffinityPreset.type Node affinity preset type. Ignored if `certInjector.affinity` is set. Allowed values: `soft` or `hard`
+    ##
+    type: ""
+    ## @param certInjector.nodeAffinityPreset.key Node label key to match. Ignored if `certInjector.affinity` is set
+    ##
+    key: ""
+    ## @param certInjector.nodeAffinityPreset.values Node label values to match. Ignored if `certInjector.affinity` is set
+    ## E.g.
+    ## values:
+    ##   - e2e-az1
+    ##   - e2e-az2
+    ##
+    values: []
+  ## @param certInjector.affinity Affinity for cert-injector pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: `certInjector.podAffinityPreset`, `certInjector.podAntiAffinityPreset`, and `certInjector.nodeAffinityPreset` will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param certInjector.nodeSelector Node labels for cert-injector pods assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param certInjector.tolerations Tolerations for cert-injector pods assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  ## @param certInjector.updateStrategy.type cert-injector statefulset strategy type
+  ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+  ##
+  updateStrategy:
+    ## StrategyType
+    ## Can be set to RollingUpdate or OnDelete
+    ##
+    type: RollingUpdate
+  ## @param certInjector.priorityClassName cert-injector pods' priorityClassName
+  ##
+  priorityClassName: ""
+  ## @param certInjector.schedulerName Name of the k8s scheduler (other than default) for cert-injector pods
+  ## ref: https://kubernetes.io/docs/tasks/administer-cluster/configure-multiple-schedulers/
+  ##
+  schedulerName: ""
+  ## @param certInjector.lifecycleHooks for the cert-injector container(s) to automate configuration before or after startup
+  ##
+  lifecycleHooks: {}
+  ## @param certInjector.extraEnvVars Array with extra environment variables to add to cert-injector nodes
+  ## e.g:
+  ## extraEnvVars:
+  ##   - name: FOO
+  ##     value: "bar"
+  ##
+  extraEnvVars: []
+  ## @param certInjector.extraEnvVarsCM Name of existing ConfigMap containing extra env vars for cert-injector nodes
+  ##
+  extraEnvVarsCM:
+  ## @param certInjector.extraEnvVarsSecret Name of existing Secret containing extra env vars for cert-injector nodes
+  ##
+  extraEnvVarsSecret:
+  ## @param certInjector.extraVolumes Optionally specify extra list of additional volumes for the cert-injector pod(s)
+  ##
+  extraVolumes: []
+  ## @param certInjector.extraVolumeMounts Optionally specify extra list of additional volumeMounts for the cert-injector container(s)
+  ##
+  extraVolumeMounts: []
+  ## @param certInjector.sidecars Add additional sidecar containers to the cert-injector pod(s)
+  ## e.g:
+  ## sidecars:
+  ##   - name: your-image-name
+  ##     image: your-image
+  ##     imagePullPolicy: Always
+  ##     ports:
+  ##       - name: portname
+  ##         containerPort: 1234
+  ##
+  sidecars: {}
+  ## @param certInjector.initContainers Add additional init containers to the cert-injector pod(s)
+  ## ref: https://kubernetes.io/docs/concepts/workloads/pods/init-containers/
+  ## e.g:
+  ## initContainers:
+  ##  - name: your-image-name
+  ##    image: your-image
+  ##    imagePullPolicy: Always
+  ##    command: ['sh', '-c', 'echo "hello world"']
+  ##
+  initContainers: {}
+
+## cert-injector webhook parameters
+##
+webhook:
+  ## @param webhook.host Overrides the mutating webhook and validating webhook so they reach the webhook 
+  ##   service using the `url` field instead of a service.
+  host: ''
+  
+  selfSigned: true
+
+
+## cert-injector service parameters
+##
+service:
+  ## @param service.type cert-injector service type
+  ##
+  type: ClusterIP
+  ## @param service.ports.http cert-injector service HTTP port
+  ## @param service.ports.https cert-injector service HTTPS port
+  ##
+  ports:
+    http: 80
+    https: 443
+  ## Node ports to expose
+  ## @param service.nodePorts.http Node port for HTTP
+  ## @param service.nodePorts.https Node port for HTTPS
+  ## NOTE: choose port between <30000-32767>
+  ##
+  nodePorts:
+    http:
+    https:
+  ## @param service.clusterIP cert-injector service Cluster IP
+  ## e.g.:
+  ## clusterIP: None
+  ##
+  clusterIP:
+  ## @param service.loadBalancerIP cert-injector service Load Balancer IP
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-loadbalancer
+  ##
+  loadBalancerIP:
+  ## @param service.loadBalancerSourceRanges cert-injector service Load Balancer sources
+  ## ref: https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ## e.g:
+  ## loadBalancerSourceRanges:
+  ##   - 10.10.10.0/24
+  ##
+  loadBalancerSourceRanges: []
+  ## @param service.externalTrafficPolicy cert-injector service external traffic policy
+  ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## @param service.annotations Additional custom annotations for cert-injector service
+  ##
+  annotations: {}
+  ## @param service.extraPorts Extra ports to expose in cert-injector service (normally used with the `sidecars` value)
+  ##
+  extraPorts: []
+
+## @section Other Parameters
+
+## RBAC configuration
+##
+rbac:
+  ## @param rbac.create Specifies whether RBAC resources should be created
+  ##
+  create: false
+
+## ServiceAccount configuration
+##
+serviceAccount:
+  ## @param serviceAccount.create Specifies whether a ServiceAccount should be created
+  ##
+  create: true
+  ## @param serviceAccount.name The name of the ServiceAccount to use.
+  ## If not set and create is true, a name is generated using the common.names.fullname template
+  ##
+  name: ""
+
+ingress:
+  enabled: no

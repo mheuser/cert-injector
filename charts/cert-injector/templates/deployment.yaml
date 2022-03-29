@@ -1,0 +1,150 @@
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ template "common.names.fullname" . }}
+  namespace: {{ template "common.names.namespace" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: pki
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.certInjector.replicaCount }}
+  {{- if .Values.certInjector.updateStrategy }}
+  strategy: {{- toYaml .Values.certInjector.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels: {{- include "common.labels.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: pki
+  template:
+    metadata:
+      {{- if .Values.certInjector.podAnnotations }}
+      annotations: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels: {{- include "common.labels.standard" . | nindent 8 }}
+        app.kubernetes.io/component: pki
+        {{- if .Values.certInjector.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ template "cert-injector.serviceAccountName" . }}
+      {{- include "cert-injector.imagePullSecrets" . | nindent 6 }}
+      {{- if .Values.certInjector.hostAliases }}
+      hostAliases: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.hostAliases "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.certInjector.affinity }}
+      affinity: {{- include "common.tplvalues.render" ( dict "value" .Values.certInjector.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.certInjector.podAffinityPreset "component" "pki" "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.certInjector.podAntiAffinityPreset "component" "pki" "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.certInjector.nodeAffinityPreset.type "key" .Values.certInjector.nodeAffinityPreset.key "values" .Values.certInjector.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.certInjector.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" ( dict "value" .Values.certInjector.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.certInjector.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.tolerations "context" .) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.certInjector.priorityClassName }}
+      priorityClassName: {{ .Values.certInjector.priorityClassName | quote }}
+      {{- end }}
+      {{- if .Values.certInjector.schedulerName }}
+      schedulerName: {{ .Values.certInjector.schedulerName | quote }}
+      {{- end }}
+      {{- if .Values.certInjector.podSecurityContext.enabled }}
+      securityContext: {{- omit .Values.certInjector.podSecurityContext "enabled" | toYaml | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.certInjector.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.initContainers "context" $) | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: cert-injector
+          image: {{ template "cert-injector.image" . }}
+          imagePullPolicy: {{ .Values.certInjector.image.pullPolicy }}
+          {{- if .Values.certInjector.containerSecurityContext.enabled }}
+          securityContext: {{- omit .Values.certInjector.containerSecurityContext "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.command "context" $) | nindent 12 }}
+          {{- else if .Values.certInjector.command }}
+          command: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.command "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.diagnosticMode.enabled }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.diagnosticMode.args "context" $) | nindent 12 }}
+          {{- else if .Values.certInjector.args }}
+          args: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.args "context" $) | nindent 12 }}
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: {{ ternary "true" "false" (or .Values.certInjector.image.debug .Values.diagnosticMode.enabled) | quote }}
+            - name: TLS
+              value: "true"
+            - name: LOG_LEVEL
+              value: "trace"
+            - name: LOG_JSON
+              value: "true"
+            {{- if .Values.certInjector.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.certInjector.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.certInjector.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.certInjector.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.certInjector.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          {{- if .Values.certInjector.resources }}
+          resources: {{- toYaml .Values.certInjector.resources | nindent 12 }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.certInjector.containerPorts.http }}
+            - name: https
+              containerPort: {{ .Values.certInjector.containerPorts.https }}
+          {{- if not .Values.diagnosticMode.enabled }}
+          {{- if .Values.certInjector.livenessProbe.enabled }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.certInjector.livenessProbe "enabled") "context" $) | nindent 12 }}
+            %%httpGet || command || etc%%
+          {{- else if .Values.certInjector.customLivenessProbe }}
+          livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.customLivenessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.certInjector.readinessProbe.enabled }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.certInjector.readinessProbe "enabled") "context" $) | nindent 12 }}
+            %%httpGet || command || etc%%
+          {{- else if .Values.certInjector.customReadinessProbe }}
+          readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.customReadinessProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- if .Values.certInjector.startupProbe.enabled }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.certInjector.startupProbe "enabled") "context" $) | nindent 12 }}
+            %%httpGet || command || etc%%
+          {{- else if .Values.certInjector.customStartupProbe }}
+          startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.customStartupProbe "context" $) | nindent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.certInjector.lifecycleHooks }}
+          lifecycle: {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.lifecycleHooks "context" $) | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: tls
+              mountPath: "/etc/admission-webhook/tls"
+              readOnly: true
+          {{- if .Values.certInjector.extraVolumeMounts }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.extraVolumeMounts "context" $) | nindent 12 }}
+          {{- end }}
+        {{- if .Values.certInjector.sidecars }}
+        {{- include "common.tplvalues.render" ( dict "value" .Values.certInjector.sidecars "context" $) | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: tls
+          secret:
+            secretName: {{ printf "%s-tls" (include "service.host" .) }}
+        {{- if .Values.certInjector.extraVolumes }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.certInjector.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}

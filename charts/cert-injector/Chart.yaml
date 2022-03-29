@@ -1,0 +1,18 @@
+annotations:
+  category: Infrastructure
+apiVersion: v2
+appVersion: 0.1.0
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.x.x
+description: Injects cert bundles into k8s container
+home: https://github.com/mheuser/cert-injector
+maintainers:
+  - name: https://github.com/mheuser
+name: cert-injector
+sources:
+- https://github.com/mheuser/cert-injector
+version: 0.1.0

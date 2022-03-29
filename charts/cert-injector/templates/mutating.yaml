@@ -1,0 +1,63 @@
+---
+{{- if and .Values.webhook.selfSigned .Values.webhook.selfSigned }}
+{{- $ca := genCA "pki-ca" 365 }}
+{{- $cert := genSignedCert (include "service.host" .) nil (list (include "service.host" .)) 365 $ca }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ printf "%s-tls" (include "service.host" .) }}
+  namespace: {{ template "common.names.namespace" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: pki
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ $cert.Cert | b64enc | quote }}
+  tls.key: {{ $cert.Key | b64enc | quote }}
+  ca.crt: {{ $ca.Cert | b64enc | quote }}
+
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ include "webhook.fullname" . }}
+  labels: {{- include "common.labels.standard" . | nindent 4 }}
+    app.kubernetes.io/component: pki
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations: {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+
+webhooks:
+  - name: cert-injector.mheuser.github.com
+    namespaceSelector:
+      matchLabels:
+        cert-injector.mheuser.github.com/enabled: "true"
+    rules:
+      - apiGroups: [""]
+        apiVersions: ["v1"]
+        operations: ["CREATE"]
+        resources: ["pods"]
+        scope: "*"
+    admissionReviewVersions: ["v1"]
+    sideEffects: None
+    timeoutSeconds: 2
+    clientConfig:
+      {{- if .Values.webhook.host }}
+      url: https://{{ .Values.webhook.host }}/mutate-pods
+      {{- else }}
+      service:
+        namespace: {{ template "common.names.namespace" . }}
+        name: {{ template "common.names.fullname" . }}
+        path: /mutate-pods
+        port: 443
+      {{- end }}
+      caBundle: {{ $ca.Cert | b64enc | quote }}
+{{- end }}
