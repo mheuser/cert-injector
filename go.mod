@@ -1,4 +1,4 @@
-module github.com/slackhq/simple-kubernetes-webhook
+module github.com/mheuser/cert-injector
 
 go 1.16
 
